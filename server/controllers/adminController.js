@@ -3,52 +3,42 @@ const bcrypt = require("bcrypt");
 const Admin = require("../models/adminModel");
 
 const registerAdmin = asyncHandler(async (req, res) => {
-	console.log(req.body);
-	const {
-		name,
-		email,
-		password,
-		aadharNo,
-		// dateOfBirth,
-		// address,
-		// pincode,
-		// aadharFront,
-		// realPhoto,
-	} = req.body;
-
-	const adminExists = await Admin.findOne({ aadharNo });
-
-	if (adminExists) {
-		return res.status(400).send("Admin already exists");
-	}
-
-	const hashedPassword = await bcrypt.hash(password, 10);
-	const admin = await Admin.create({
-		adminname: name,
-		email,
-		password: hashedPassword,
-		aadharNo,
-		// dateOfBirth,
-		// address,
-		// pincode,
-		// aadharFront,
-		// realPhoto,
-	});
-
-	if (admin) {
-		return res.status(201).json({
-			_id: admin._id,
-			adminname: admin.adminname,
-			email: admin.email,
-			aadharNo: admin.aadharNo,
-			// dateOfBirth: admin.dateOfBirth,
-			// address: admin.address,
-			// pincode: admin.pincode,
-			// aadharFront: admin.aadharFront,
-			// realPhoto: admin.realPhoto,
+	
+	try {
+		const {
+			fullName,
+			email,
+			password
+		} = req.body;
+	
+		const adminExists = await Admin.findOne({ email });
+	
+		if (adminExists) {
+			return res.status(400).json("Admin already exists");
+		}
+	
+		const hashedPassword = await bcrypt.hash(password, 10);
+		const admin = await Admin.create({
+			adminname: fullName,
+			email,
+			password: hashedPassword,
+			// aadharNo,
+			// dateOfBirth,
+			// address,
+			// pincode,
+			// aadharFront,
+			// realPhoto,
 		});
-	} else {
-		return res.status(400).json({ message: "Invalid admin data" });
+	
+		if (admin) {
+			return res.status(200).json(admin);
+		} else {
+			return res.status(400).json({ message: "Invalid admin data" });
+		}
+	} catch (error) {
+
+		console.log(error)
+		
 	}
 });
 

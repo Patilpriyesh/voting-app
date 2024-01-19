@@ -153,4 +153,4 @@ const VoterSignup = () => {
 	);
 };
 
-export default Signup;
+export default VoterSignup;
